@@ -7,12 +7,19 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
   },
+  // Esto desactiva completamente el pre-rendering de páginas de error
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  // IMPORTANTE: Esto evita el pre-rendering
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
     },
   },
-  output: 'standalone',
   async headers() {
     return [
       {
@@ -34,6 +41,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Esto fuerza que no se generen páginas estáticas de error
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 };
 
 export default nextConfig;
