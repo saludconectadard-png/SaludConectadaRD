@@ -1,6 +1,6 @@
 const N8N_URL_BASE =
   process.env.N8N_WEBHOOK_BASE_URL ||
-  'https://monkey-adapting-cub.ngrok-free.app';
+  'https://n8n.srv961452.hstgr.cloud';
 
 export const WEBHOOK_URLS = {
   citas: `${N8N_URL_BASE}/webhook/pacientes`,
