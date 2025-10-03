@@ -265,7 +265,7 @@ export function CitaForm() {
                           }
                           onSelect={(date) =>
                             field.onChange(
-                              date ? format(date, 'yyyy/MM/dd') : ''
+                              date ? format(date, 'dd/MM/yyyy') : ''
                             )
                           }
                           disabled={(date) =>
