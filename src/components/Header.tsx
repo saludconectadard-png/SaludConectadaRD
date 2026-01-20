@@ -14,6 +14,7 @@ const navLinks = [
   { href: '/citas', label: 'Solicitar Cita' },
   { href: '/voluntarios', label: 'Ser Voluntario' },
   { href: '/donar', label: 'Donar' },
+  { href: '/opiniones', label: 'Opiniones' },
 ];
 
 export function Header() {

@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useTransition } from 'react';
+import { useTransition, useState } from 'react';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { format, parse } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -40,6 +40,19 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 
+const clinicasRD = {
+  'Clínica Independencia':
+    'https://www.google.com/maps?q=Clínica+Independencia,+Santo+Domingo,+República+Dominicana&output=embed',
+  'Hospital Central de las Fuerzas Armadas':
+    'https://www.google.com/maps?q=Hospital+Central+de+las+Fuerzas+Armadas,+Santo+Domingo,+República+Dominicana&output=embed',
+  'Clínica San José':
+    'https://www.google.com/maps?q=Clínica+San+José,+Santo+Domingo,+República+Dominicana&output=embed',
+  'Centro Médico UCE':
+    'https://www.google.com/maps?q=Centro+Médico+UCE,+Santo+Domingo,+República+Dominicana&output=embed',
+  'Hospital Docente Padre Billini':
+    'https://www.google.com/maps?q=Hospital+Docente+Padre+Billini,+Santo+Domingo,+República+Dominicana&output=embed',
+};
+
 const generateTimeSlots12Hour = () => {
   const slots = [];
   for (let hour = 0; hour < 24; hour++) {
@@ -60,6 +73,7 @@ const timeSlots = generateTimeSlots12Hour();
 export function CitaForm() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
+  const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
 
   const form = useForm<CitaSchema>({
     resolver: zodResolver(citaSchema),
@@ -87,6 +101,7 @@ export function CitaForm() {
             'Hemos recibido tu solicitud. Recibirás una confirmación por correo electrónico pronto.',
         });
         form.reset();
+        setSelectedClinic(null);
       } else {
         toast({
           variant: 'destructive',
@@ -105,6 +120,7 @@ export function CitaForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Nombre */}
             <FormField
               control={form.control}
               name="nombreCompleto"
@@ -118,6 +134,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Cédula */}
             <FormField
               control={form.control}
               name="cedula"
@@ -131,6 +149,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Edad */}
             <FormField
               control={form.control}
               name="edad"
@@ -160,6 +180,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Teléfono */}
             <FormField
               control={form.control}
               name="telefono"
@@ -177,6 +199,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Email */}
             <FormField
               control={form.control}
               name="email"
@@ -194,6 +218,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Centro de salud */}
             <FormField
               control={form.control}
               name="centroSalud"
@@ -201,7 +227,10 @@ export function CitaForm() {
                 <FormItem>
                   <FormLabel>Centro de Salud</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(val) => {
+                      field.onChange(val);
+                      setSelectedClinic(val);
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -210,21 +239,33 @@ export function CitaForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Centro Comunitario A">
-                        Centro Comunitario A
-                      </SelectItem>
-                      <SelectItem value="Clínica Rural B">
-                        Clínica Rural B
-                      </SelectItem>
-                      <SelectItem value="Hospital Municipal C">
-                        Hospital Municipal C
-                      </SelectItem>
+                      {Object.keys(clinicasRD).map((clinica) => (
+                        <SelectItem key={clinica} value={clinica}>
+                          {clinica}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/*Mapa*/}
+            {selectedClinic && (
+              <div className="w-full h-[300px] rounded-xl overflow-hidden border shadow-md">
+                <iframe
+                  src={clinicasRD[selectedClinic]}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            )}
+
+            {/* Fecha y hora */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
@@ -279,6 +320,7 @@ export function CitaForm() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="horaCita"
@@ -307,6 +349,8 @@ export function CitaForm() {
                 )}
               />
             </div>
+
+            {/* Motivo */}
             <FormField
               control={form.control}
               name="motivoCita"
@@ -317,13 +361,15 @@ export function CitaForm() {
                     <Textarea
                       placeholder="Describa su problema de salud..."
                       {...field}
-                      rows={4}
+                      rows={3}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Acompañante */}
             <FormField
               control={form.control}
               name="necesitaAcompanante"
@@ -347,6 +393,8 @@ export function CitaForm() {
                 </FormItem>
               )}
             />
+
+            {/* Botón */}
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Enviar Solicitud
