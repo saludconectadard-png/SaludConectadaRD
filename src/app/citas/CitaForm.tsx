@@ -255,7 +255,7 @@ export function CitaForm() {
             {selectedClinic && (
               <div className="w-full h-[300px] rounded-xl overflow-hidden border shadow-md">
                 <iframe
-                  src={clinicasRD[selectedClinic]}
+                  src={clinicasRD[selectedClinic as keyof typeof clinicasRD]}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
