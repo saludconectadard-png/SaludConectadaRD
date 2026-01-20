@@ -261,7 +261,7 @@ export function CitaForm() {
                   style={{ border: 0 }}
                   loading="lazy"
                   allowFullScreen
-                ></iframe>
+                />
               </div>
             )}
 
