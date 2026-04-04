@@ -1,0 +1,24 @@
+name: Deploy a Producción
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/web-saludconectada
+            git pull origin main
+            cd /root/mi-stack-soberano
+            docker compose up -d --build web
+            docker exec root-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+            echo "Deploy completado: $(date)"
